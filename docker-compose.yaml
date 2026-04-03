@@ -22,6 +22,7 @@ x-airflow-common: &airflow-common
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
     - ./spark/jobs:/opt/airflow/spark_jobs
+    - ./spark/jobs:/opt/airflow/dags/jobs 
     - ./dbt:/opt/airflow/dbt                     # dbt project — run via BashOperator in DAGs
     - ./secrets/gcp-key.json:/opt/airflow/secrets/gcp-key.json:ro
   networks:
