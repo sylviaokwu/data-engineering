@@ -1,0 +1,153 @@
+version: "3.8"
+
+x-airflow-common: &airflow-common
+  build:
+    context: ./docker/airflow
+    dockerfile: Dockerfile
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
+    # GCS / BigQuery auth
+    GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/secrets/gcp-key.json
+    GCP_PROJECT_ID: ${GCP_PROJECT_ID}
+    GCS_BUCKET: ${GCS_BUCKET}
+    GCP_DATASET: ${GCP_DATASET}
+    DBT_PROJECT_DIR: /opt/airflow/dbt
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+    - ./spark/jobs:/opt/airflow/spark_jobs
+    - ./dbt:/opt/airflow/dbt                     # dbt project — run via BashOperator in DAGs
+    - ./secrets/gcp-key.json:/opt/airflow/secrets/gcp-key.json:ro
+  networks:
+    - data_net
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Metadata DB for Airflow
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15
+    container_name: de_postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    networks:
+      - data_net
+
+  # ─────────────────────────────────────────────
+  # Airflow — DB init (runs once)
+  # ─────────────────────────────────────────────
+  airflow-init:
+    <<: *airflow-common
+    container_name: de_airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com
+    restart: "no"
+
+  # ─────────────────────────────────────────────
+  # Airflow — Scheduler
+  # ─────────────────────────────────────────────
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: de_airflow_scheduler
+    command: scheduler
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  # ─────────────────────────────────────────────
+  # Airflow — Webserver  (http://localhost:8080)
+  # ─────────────────────────────────────────────
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: de_airflow_webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ─────────────────────────────────────────────
+  # Spark — Master  (UI: http://localhost:8090)
+  # ─────────────────────────────────────────────
+  spark-master:
+    build:
+      context: ./docker/spark
+      dockerfile: Dockerfile
+    container_name: de_spark_master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    environment:
+      - SPARK_MASTER_HOST=spark-master
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/spark/secrets/gcp-key.json
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+    ports:
+      - "8090:8080"   # Spark Master UI
+      - "7077:7077"   # Spark master port
+    volumes:
+      - ./spark/jobs:/opt/spark/jobs
+      - ./secrets/gcp-key.json:/opt/spark/secrets/gcp-key.json:ro
+    networks:
+      - data_net
+
+  spark-worker:
+    build:
+      context: ./docker/spark
+      dockerfile: Dockerfile
+    container_name: de_spark_worker
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/spark/secrets/gcp-key.json
+    volumes:
+      - ./spark/jobs:/opt/spark/jobs
+      - ./secrets/gcp-key.json:/opt/spark/secrets/gcp-key.json:ro
+    depends_on:
+      - spark-master
+    networks:
+      - data_net
+
+
+networks:
+  data_net:
+    driver: bridge
+
+volumes:
+  postgres_data:

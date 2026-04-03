@@ -1,0 +1,38 @@
+name: data-engineering
+version: "1.0.0"
+config-version: 2
+
+profile: data-engineering        
+
+# paths
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"     
+clean-targets: ["target", "dbt_packages"]
+
+# ─────────────────────────────────────────────
+# Model configurations by layer
+# ─────────────────────────────────────────────
+models:
+  data-engineering:
+
+    views:
+      +materialized: view        # staging models are views — cheap, always fresh
+      +schema: staging           # writes to de_staging dataset in BigQuery
+      +tags: ["staging"]
+
+    warehouse:
+      +materialized: table       # warehouse models are full tables
+      +schema: warehouse         # writes to de_warehouse dataset in BigQuery
+      +tags: ["warehouse"]
+
+    mart:
+      +materialized: table       # mart models are tables — fast for reporting
+      +schema: mart              # writes to de_mart dataset in BigQuery
+      +tags: ["mart"]
+```
