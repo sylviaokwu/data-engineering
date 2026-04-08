@@ -12,6 +12,12 @@ RUN apt-get update -qq && apt-get install -qqq \
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
+# Download GCS connector jar so spark-submit can reference it
+RUN mkdir -p /opt/airflow/jars && \
+    curl -fsSL \
+    "https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-2.2.22.jar" \
+    -o /opt/airflow/jars/gcs-connector-hadoop3-2.2.22.jar
+
 WORKDIR $AIRFLOW_HOME
 
 USER airflow
