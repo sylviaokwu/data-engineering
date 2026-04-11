@@ -15,11 +15,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-# ── Config ─────────────────────────────────────────────────────────────────────
 
-GCS_BUCKET = os.getenv("GCS_BUCKET_NAME", "terraform-sylvia-data")
-RAW_PATH   = f"gs://{GCS_BUCKET}/raw/prices/"
-PROC_PATH  = f"gs://{GCS_BUCKET}/processed/crypto/"
+GCS_BUCKET   = os.getenv("GCS_BUCKET_NAME", "terraform-sylvia-data")
+GCP_PROJECT  = os.getenv("GCP_PROJECT_ID")
+BQ_DATASET   = os.getenv("GCP_DATASET", "de_staging")
+BQ_TABLE     = f"{GCP_PROJECT}.{BQ_DATASET}.asset_prices"
+RAW_PATH     = f"gs://{GCS_BUCKET}/raw/prices/"
 
 
 # ── Spark Session ──────────────────────────────────────────────────────────────
@@ -40,7 +41,9 @@ def create_spark_session():
                 "/opt/spark/secrets/gcp-key.json")
         .config("spark.sql.parquet.int96RebaseModeInRead", "CORRECTED")
         .config("spark.sql.parquet.datetimeRebaseModeInRead", "CORRECTED")
-        .config("spark.sql.legacy.parquet.nanosAsLong", "true")  
+        .config("spark.sql.legacy.parquet.nanosAsLong", "true")
+        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile",
+                "/opt/spark/secrets/gcp-key.json") 
         .getOrCreate()
     )
 
@@ -123,15 +126,19 @@ def enrich(df):
     )
 
 
-def write_processed(df):
-    logger.info(f"Writing processed data to {PROC_PATH}")
+def write_to_bigquery(df):
+    logger.info(f"Writing to BigQuery table {BQ_TABLE}")
     (
         df.write
-        .mode("overwrite")
-        .partitionBy("ticker", "year")
-        .parquet(PROC_PATH)
+        .format("bigquery")
+        .option("table", BQ_TABLE)
+        .option("temporaryGcsBucket", GCS_BUCKET)
+        .option("createDisposition", "CREATE_IF_NEEDED")
+        .option("writeDisposition", "WRITE_TRUNCATE") 
+        .mode("overwrite") 
+        .save()
     )
-    logger.info("✅ Processing complete")
+    logger.info("✅ Written to BigQuery successfully")
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
@@ -144,7 +151,7 @@ def main():
         df = filter_crypto(df)
         df = clean(df)
         df = enrich(df)
-        write_processed(df)
+        write_to_bigquery(df)
 
     finally:
         spark.stop()

@@ -16,7 +16,10 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 RUN mkdir -p /opt/airflow/jars && \
     curl -fsSL \
     "https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-2.2.22.jar" \
-    -o /opt/airflow/jars/gcs-connector-hadoop3-2.2.22.jar
+    -o /opt/airflow/jars/gcs-connector-hadoop3-2.2.22.jar && \
+    curl -fsSL \
+    "https://github.com/GoogleCloudDataproc/spark-bigquery-connector/releases/download/0.36.1/spark-bigquery-with-dependencies_2.12-0.36.1.jar" \
+    -o /opt/airflow/jars/spark-bigquery-with-dependencies_2.12-0.36.1.jar
 
 WORKDIR $AIRFLOW_HOME
 

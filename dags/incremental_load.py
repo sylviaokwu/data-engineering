@@ -25,7 +25,7 @@ with DAG(
     task_id="process_crypto_spark",
     application="/opt/airflow/spark_jobs/process_crypto.py",
     conn_id="spark_default",
-    jars="/opt/airflow/jars/gcs-connector-hadoop3-2.2.22.jar",
+    jars="/opt/airflow/jars/gcs-connector-hadoop3-2.2.22.jar,/opt/airflow/jars/spark-bigquery-with-dependencies_2.12-0.36.1.jar",
     conf={
         "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
         "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopAbstractFileSystem",
@@ -34,7 +34,7 @@ with DAG(
         "spark.executorEnv.GOOGLE_APPLICATION_CREDENTIALS": "/opt/spark/secrets/gcp-key.json",  # ← forces executor to use spark path
         "spark.yarn.appMasterEnv.GOOGLE_APPLICATION_CREDENTIALS": "/opt/spark/secrets/gcp-key.json",
     },
-    env_vars={"GCS_BUCKET_NAME": "terraform-sylvia-data"},
+    
     dag=dag,
     )
 

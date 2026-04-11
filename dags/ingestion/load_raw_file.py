@@ -69,6 +69,9 @@ def _fetch_tickers(tickers, start_date, end_date, interval):
         raise ValueError("No data fetched for any ticker.")
 
     result = pd.concat(frames, ignore_index=True)
+    result["date"] = pd.to_datetime(result["date"], errors='coerce').dt.date
+    result["ingestion_date"] = pd.to_datetime(result["ingestion_date"], errors='coerce').dt.date
+    result['volume'] = result['volume'].astype('float64')
     logger.info(f"Fetched {len(result):,} rows | asset classes: {result['asset_class'].value_counts().to_dict()}")
     return result
 
