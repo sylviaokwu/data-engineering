@@ -1,8 +1,8 @@
-name: data-engineering
+name: data_engineering
 version: "1.0.0"
 config-version: 2
 
-profile: data-engineering        
+profile: data_engineering        
 
 # paths
 model-paths: ["models"]
@@ -35,4 +35,3 @@ models:
       +materialized: table       # mart models are tables — fast for reporting
       +schema: mart              # writes to de_mart dataset in BigQuery
       +tags: ["mart"]
-```
