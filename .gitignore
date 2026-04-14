@@ -13,3 +13,5 @@ terraform/keys/
 serving_dir
 .ipynb_checkpoints/
 .user.yml
+target/
+dbt_packages/

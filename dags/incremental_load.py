@@ -4,6 +4,8 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime
 from ingestion.load_raw_file import ingest_incremental_to_gcs
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+from airflow.operators.bash import BashOperator
+
 
 with DAG(
     dag_id="multi_asset_incremental_ingestion",
@@ -21,9 +23,9 @@ with DAG(
         },
     )
 
-    process_crypto = SparkSubmitOperator(
-    task_id="process_crypto_spark",
-    application="/opt/airflow/spark_jobs/process_crypto.py",
+    process_assets = SparkSubmitOperator(
+    task_id="process_assets_spark",
+    application="/opt/airflow/spark_jobs/process_assets.py",
     conn_id="spark_default",
     jars="/opt/airflow/jars/gcs-connector-hadoop3-2.2.22.jar,/opt/airflow/jars/spark-bigquery-with-dependencies_2.12-0.36.1.jar",
     conf={
@@ -38,4 +40,14 @@ with DAG(
     dag=dag,
     )
 
-incremental_ingest >> process_crypto  
+    dbt_seed = BashOperator(
+        task_id='dbt_seed',
+        bash_command='cd /opt/airflow/dbt && dbt seed --target dev',
+    )
+
+    dbt_run = BashOperator(
+        task_id='dbt_run',
+        bash_command='cd /opt/airflow/dbt && dbt run --target dev',
+    )
+
+incremental_ingest >> process_assets >> dbt_seed>> dbt_run 

@@ -57,10 +57,6 @@ def read_raw(spark):
     return df
 
 
-def filter_crypto(df):
-    crypto_df = df.filter(F.col("asset_class") == "crypto")
-    logger.info(f"Crypto row count after filter: {crypto_df.count():,}")
-    return crypto_df
 
 
 def clean(df):
@@ -96,33 +92,14 @@ def enrich(df):
         .withColumn("daily_return",
             (F.col("close") - F.col("prev_close")) / F.col("prev_close"))
 
-        # ── Moving averages ───────────────────────────────────
         .withColumn("ma_7",  F.avg("close").over(w_7d))
         .withColumn("ma_30", F.avg("close").over(w_30d))
 
-        # ── Volatility (std of daily returns over 30d) ────────
         .withColumn("volatility_30d",
             F.stddev("daily_return").over(w_30d))
 
-        # ── Price range ───────────────────────────────────────
-        .withColumn("daily_range",
-            F.col("high") - F.col("low"))
 
-        # ── Cumulative return from first date per ticker ──────
-        .withColumn("first_close",
-            F.first("close").over(w_ticker.rowsBetween(
-                Window.unboundedPreceding, Window.unboundedFollowing)))
-        .withColumn("cumulative_return",
-            (F.col("close") - F.col("first_close")) / F.col("first_close"))
-
-        # ── Time features ─────────────────────────────────────
-        .withColumn("year",        F.year("date"))
-        .withColumn("month",       F.month("date"))
-        .withColumn("day_of_week", F.dayofweek("date"))
-        .withColumn("quarter",     F.quarter("date"))
-
-        # Clean up intermediary columns
-        .drop("prev_close", "first_close")
+        .drop("prev_close")
     )
 
 
@@ -148,7 +125,6 @@ def main():
 
     try:
         df = read_raw(spark)
-        df = filter_crypto(df)
         df = clean(df)
         df = enrich(df)
         write_to_bigquery(df)

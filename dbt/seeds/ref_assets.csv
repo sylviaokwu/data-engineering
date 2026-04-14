@@ -1,0 +1,52 @@
+ticker,full_name,asset_class,sector,sub_asset_class,region,risk_level
+ADA-USD,Cardano,crypto,Layer-1,altcoin,Global,high
+ALGO-USD,Algorand,crypto,Layer-1,altcoin,Global,high
+AMZN,Amazon.com Inc,stock,Consumer Discretionary,large-cap,US,medium
+AVAX-USD,Avalanche,crypto,Layer-1,altcoin,Global,high
+BAC,Bank of America Corp,stock,Financials,large-cap,US,medium
+BNB-USD,BNB,crypto,Exchange Token,altcoin,Global,high
+BTC-USD,Bitcoin,crypto,Store of Value,large-cap crypto,Global,high
+ETH-USD,Ethereum,crypto,Layer-1,large-cap crypto,Global,high
+FET-USD,Fetch.ai,crypto,AI/Web3,altcoin,Global,high
+GOOGL,Alphabet Inc,stock,Technology,large-cap,US,medium
+GS,Goldman Sachs Group,stock,Financials,large-cap,US,medium
+IEF,iShares 7-10 Year Treasury Bond ETF,etf,Fixed Income,etf-bond,US,low
+LINK-USD,Chainlink,crypto,Oracle,altcoin,Global,high
+MA,Mastercard Inc,stock,Financials,large-cap,US,medium
+MSFT,Microsoft Corporation,stock,Technology,large-cap,US,medium
+NVDA,NVIDIA Corporation,stock,Technology,large-cap,US,medium
+SLV,iShares Silver Trust,etf,Commodities,etf-commodity,US,medium
+SOL-USD,Solana,crypto,Layer-1,large-cap crypto,Global,high
+SPY,SPDR S&P 500 ETF Trust,etf,Broad Market,etf-equity,US,medium
+TLT,iShares 20+ Year Treasury Bond ETF,etf,Fixed Income,etf-bond,US,low
+TRX-USD,TRON,crypto,Layer-1,altcoin,Global,high
+UNI-USD,Uniswap,crypto,DeFi,altcoin,Global,high
+VNQ,Vanguard Real Estate ETF,etf,Real Estate,etf-equity,US,medium
+VTI,Vanguard Total Stock Market ETF,etf,Broad Market,etf-equity,US,medium
+VWCE.DE,Vanguard FTSE All-World UCITS ETF,etf,Broad Market,etf-equity,Global,medium
+WMT,Walmart Inc,stock,Consumer Staples,large-cap,US,medium
+XLM-USD,Stellar,crypto,Payments,altcoin,Global,high
+AAPL,Apple Inc,stock,Technology,large-cap,US,medium
+ARB-USD,Arbitrum,crypto,Layer-2,altcoin,Global,high
+ATOM-USD,Cosmos,crypto,Interoperability,altcoin,Global,high
+BP,BP plc,stock,Energy,large-cap,EU,medium
+BRK-B,Berkshire Hathaway Inc Class B,stock,Financials,large-cap,US,medium
+CVX,Chevron Corporation,stock,Energy,large-cap,US,medium
+DIS,The Walt Disney Company,stock,Communication Services,large-cap,US,medium
+DOGE-USD,Dogecoin,crypto,Meme,altcoin,Global,high
+DOT-USD,Polkadot,crypto,Interoperability,altcoin,Global,high
+ETC-USD,Ethereum Classic,crypto,Layer-1,altcoin,Global,high
+GLD,SPDR Gold Shares,etf,Commodities,etf-commodity,US,medium
+INJ-USD,Injective,crypto,DeFi,altcoin,Global,high
+JNJ,Johnson & Johnson,stock,Healthcare,large-cap,US,low
+JPM,JPMorgan Chase & Co,stock,Financials,large-cap,US,medium
+LDO-USD,Lido DAO,crypto,DeFi,altcoin,Global,high
+LTC-USD,Litecoin,crypto,Payments,altcoin,Global,high
+MATIC-USD,Polygon,crypto,Layer-2,altcoin,Global,high
+META,Meta Platforms Inc,stock,Technology,large-cap,US,medium
+NEAR-USD,NEAR Protocol,crypto,Layer-1,altcoin,Global,high
+OP-USD,Optimism,crypto,Layer-2,altcoin,Global,high
+PFE,Pfizer Inc,stock,Healthcare,large-cap,US,medium
+QQQ,Invesco QQQ Trust,etf,Technology,etf-equity,US,medium
+SUI-USD,Sui,crypto,Layer-1,altcoin,Global,high
+XRP-USD,XRP,crypto,Payments,large-cap crypto,Global,high
