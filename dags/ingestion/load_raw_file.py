@@ -99,7 +99,7 @@ def ingest_historical_to_gcs(
     One-time full historical load. Writes one file per ticker-batch.
     Run this manually once to backfill.
     """
-    bucket_name = bucket_name or os.getenv("GCS_BUCKET_NAME", "terraform-sylvia-data")
+    bucket_name = bucket_name or os.getenv("GCS_BUCKET")
     end_date    = datetime.today().strftime("%Y-%m-%d")
 
     result = _fetch_tickers(tickers, start_date, end_date, interval)
@@ -124,7 +124,7 @@ def ingest_incremental_to_gcs(
     Spark handles deduplication at processing stage.
     Run this from Airflow on a daily schedule.
     """
-    bucket_name = bucket_name or os.getenv("GCS_BUCKET_NAME", "terraform-sylvia-data")
+    bucket_name = bucket_name or os.getenv("GCS_BUCKET")
     end_date    = datetime.today()
     start_date  = (end_date - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
     end_date    = end_date.strftime("%Y-%m-%d")

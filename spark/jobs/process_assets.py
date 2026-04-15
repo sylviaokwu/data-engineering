@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 
-GCS_BUCKET   = os.getenv("GCS_BUCKET_NAME", "terraform-sylvia-data")
+GCS_BUCKET   = os.getenv("GCS_BUCKET")
 GCP_PROJECT  = os.getenv("GCP_PROJECT_ID")
 BQ_DATASET   = os.getenv("GCP_DATASET", "de_staging")
 BQ_TABLE     = f"{GCP_PROJECT}.{BQ_DATASET}.asset_prices"
