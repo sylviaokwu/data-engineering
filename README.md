@@ -2,6 +2,11 @@
 
 End-to-end data engineering project using **Airflow**, **Spark**, **dbt**, and **GCS/BigQuery** on Google Cloud Platform. Designed for easy reproducibility using GitHub Codespaces.
 
+This project builds a fully automated, containerised data pipeline for ingestingand transforming multi-asset financial market data — with a focus on crypto prices.
+It was built to solve a real problem: taking raw market data delivered daily via an external API, making it reliable, queryable, and ready for analysis .
+
+The pipeline handles the full journey from raw API ingestion through to structured BigQuery tables that dbt models build on. 
+
 ## Architecture
 
 ```
@@ -13,6 +18,19 @@ BigQuery staging
     ↓  dbt
 BigQuery warehouse → mart
 ```
+
+```mermaid
+flowchart TD
+    A[External market API] -->|daily ingest| B[Airflow DAG]
+    B -->|raw parquet| C[GCS — raw layer]
+    C -->|spark job| D[PySpark]
+    D -->|write to BQ| E[BigQuery staging]
+    E -->|dbt run| F[dbt models]
+    F --> G[staging]
+    F --> H[warehouse]
+    F --> I[mart]
+```
+ 
 
 ## Tech Stack
 
@@ -299,3 +317,6 @@ data-engineering/
 ├── logs/                       # gitignored
 └── plugins/
 ```
+The dashboard was built using the data model. You can access the dashboard [here](https://datastudio.google.com/reporting/bf23e7d6-a7bc-4aa2-8203-2bdcce49035e)
+
+![alt text](image.png)
