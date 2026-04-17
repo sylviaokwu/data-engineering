@@ -19,15 +19,7 @@ BigQuery staging
 BigQuery warehouse → mart
 ```
 
-```mermaid
-flowchart TD
-    A[External market API (yahoo finance)] -->|daily ingest| B[Airflow DAG]
-    B -->|raw parquet| C[GCS — raw layer]
-    C -->|spark job| D[PySpark]
-    D -->|write to BQ| E[BigQuery staging]
-    E -->|dbt run| F[dbt models]
 
-```
 ![alt text](flow.png) 
 
 ## Tech Stack
