@@ -21,16 +21,14 @@ BigQuery warehouse → mart
 
 ```mermaid
 flowchart TD
-    A[External market API] -->|daily ingest| B[Airflow DAG]
+    A[External market API (yahoo finance)] -->|daily ingest| B[Airflow DAG]
     B -->|raw parquet| C[GCS — raw layer]
     C -->|spark job| D[PySpark]
     D -->|write to BQ| E[BigQuery staging]
     E -->|dbt run| F[dbt models]
-    F --> G[staging]
-    F --> H[warehouse]
-    F --> I[mart]
+
 ```
- 
+![alt text](flow.png) 
 
 ## Tech Stack
 
