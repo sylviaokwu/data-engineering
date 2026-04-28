@@ -1,14 +1,14 @@
 data_engineering:
   outputs:
     dev:
-      dataset: crypto_dataset
+      dataset: "{{ env_var('GCP_DATASET') }}"
       job_execution_timeout_seconds: 300
       job_retries: 1
       keyfile: /opt/airflow/secrets/gcp-key.json
-      location: EU
+      location: "{{ env_var('GCP_LOCATION') }}"
       method: service-account
       priority: interactive
-      project: 'terraform-sylvia'
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
       threads: 6
       type: bigquery
   target: dev

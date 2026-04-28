@@ -55,6 +55,25 @@ services:
       - data_net
 
   # ─────────────────────────────────────────────
+  # Terraform — Infrastructure Provisioning
+  # ─────────────────────────────────────────────
+  terraform:
+    image: hashicorp/terraform:latest
+    container_name: de_terraform
+    working_dir: /workspace
+    volumes:
+      - ./terraform:/workspace
+      - ./secrets/gcp-key.json:/workspace/secrets/gcp-key.json:ro
+    environment:
+      - TF_VAR_project=${GCP_PROJECT_ID}
+      - TF_VAR_gcs_bucket_name=${GCS_BUCKET}
+      - TF_VAR_bq_dataset_name=${GCP_DATASET}
+      - TF_VAR_region=${GCP_REGION:-europe-west1}
+      - TF_VAR_location=${GCP_LOCATION:-EU}
+    entrypoint: [""]
+    command: ["/bin/sh", "-c", "terraform init && terraform apply -auto-approve"]
+
+  # ─────────────────────────────────────────────
   # Airflow — DB init (runs once)
   # ─────────────────────────────────────────────
   airflow-init:
@@ -73,6 +92,9 @@ services:
           --role Admin \
           --email admin@example.com
     restart: "no"
+    depends_on:
+      terraform:
+        condition: service_completed_successfully
 
   # ─────────────────────────────────────────────
   # Airflow — Scheduler
