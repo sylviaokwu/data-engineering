@@ -16,6 +16,7 @@ x-airflow-common: &airflow-common
     GCP_PROJECT_ID: ${GCP_PROJECT_ID}
     GCS_BUCKET: ${GCS_BUCKET}
     GCP_DATASET: ${GCP_DATASET}
+    GCP_LOCATION: ${GCP_LOCATION:-EU}
     DBT_PROJECT_DIR: /opt/airflow/dbt
   volumes:
     - ./dags:/opt/airflow/dags
