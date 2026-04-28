@@ -5,8 +5,16 @@ End-to-end data engineering project using **Airflow**, **Spark**, **dbt**, and *
 This project builds a fully automated, containerised data pipeline for ingestingand transforming multi-asset financial market data — with a focus on crypto prices.
 It was built to solve a real problem: taking raw market data delivered daily via an external API, making it reliable, queryable, and ready for analysis .
 
-The pipeline handles the full journey from raw API ingestion through to structured BigQuery tables that dbt models build on. 
+## Problem Statement
 
+Financial market data (specifically cryptocurrency prices) is often delivered as raw, high-velocity JSON or CSV files from disparate APIs. This presents several challenges for data analysts:
+
+- **Manual Overhead**: Downloading and cleaning data daily is time-consuming and prone to human error.
+- **Inconsistency**: Raw API outputs lack the structure required for complex historical analysis or cross-asset comparisons.
+- **Data Gaps**: Traditional ingestion often misses late-arriving data or fails during API downtime.
+- **Infrastructure Complexity**: Manually setting up cloud buckets, databases, and processing clusters is difficult to reproduce and manage.
+
+**This project solves these problems** by providing a fully automated, containerized pipeline that handles everything from infrastructure provisioning (Terraform) to production-grade SQL modeling (dbt), ensuring data is always reliable, queryable, and ready for analysis.
 ## Architecture
 
 ```
@@ -21,17 +29,6 @@ BigQuery warehouse → mart
 
 
 ![alt text](flow.png) 
-
-## Problem Statement
-
-Financial market data (specifically cryptocurrency prices) is often delivered as raw, high-velocity JSON or CSV files from disparate APIs. This presents several challenges for data analysts:
-
-- **Manual Overhead**: Downloading and cleaning data daily is time-consuming and prone to human error.
-- **Inconsistency**: Raw API outputs lack the structure required for complex historical analysis or cross-asset comparisons.
-- **Data Gaps**: Traditional ingestion often misses late-arriving data or fails during API downtime.
-- **Infrastructure Complexity**: Manually setting up cloud buckets, databases, and processing clusters is difficult to reproduce and manage.
-
-**This project solves these problems** by providing a fully automated, containerized pipeline that handles everything from infrastructure provisioning (Terraform) to production-grade SQL modeling (dbt), ensuring data is always reliable, queryable, and ready for analysis.
 
 ## Tech Stack
 
